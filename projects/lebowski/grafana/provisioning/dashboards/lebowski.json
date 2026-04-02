@@ -1,0 +1,428 @@
+{
+  "uid": "lebowski-overview",
+  "title": "Lebowski",
+  "refresh": "30s",
+  "time": { "from": "now-24h", "to": "now" },
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "panels": [
+
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 2 },
+      "options": { "mode": "markdown", "content": "## 🟢 Здоровье сервиса" }
+    },
+
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Ошибки (ERROR) за 5 мин",
+      "gridPos": { "x": 0, "y": 2, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum by (compose_service) (rate({project=\"lebowski\"} |= \"ERROR\" [5m]))",
+          "legendFormat": "{{compose_service}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2 },
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        }
+      }
+    },
+
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Unhandled exceptions (за 1 ч)",
+      "gridPos": { "x": 12, "y": 2, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Traceback\" [1h]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          },
+          "mappings": [{ "type": "value", "options": { "0": { "text": "OK" } } }]
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "WARNING за 1 ч",
+      "gridPos": { "x": 18, "y": 2, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"WARNING\" [1h]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 20 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Доступ запрещён (за 1 ч)",
+      "gridPos": { "x": 12, "y": 6, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Доступ запрещён\" [1h]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 3 },
+              { "color": "red", "value": 10 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Бот запущен (за 24 ч)",
+      "gridPos": { "x": 18, "y": 6, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Starting Telegram polling\" [24h]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 3 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 7,
+      "type": "logs",
+      "title": "Последние ошибки",
+      "gridPos": { "x": 0, "y": 10, "w": 24, "h": 8 },
+      "targets": [
+        {
+          "expr": "{project=\"lebowski\"} |= \"ERROR\""
+        }
+      ],
+      "options": { "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true }
+    },
+
+    {
+      "id": 10,
+      "type": "text",
+      "title": "",
+      "gridPos": { "x": 0, "y": 18, "w": 24, "h": 2 },
+      "options": { "mode": "markdown", "content": "## 📄 Обработка документов" }
+    },
+
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "PDF ingestion — успех / ошибка",
+      "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"PDF обработан\" [5m]))",
+          "legendFormat": "успех"
+        },
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"PDF ingestion failed\" [5m]))",
+          "legendFormat": "ошибка"
+        }
+      ]
+    },
+
+    {
+      "id": 12,
+      "type": "stat",
+      "title": "PDF ошибок за 24 ч",
+      "gridPos": { "x": 12, "y": 20, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"PDF ingestion failed\" [24h]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 13,
+      "type": "stat",
+      "title": "Text ingestion ошибок за 24 ч",
+      "gridPos": { "x": 18, "y": 20, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Text ingestion failed\" [24h]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 14,
+      "type": "stat",
+      "title": "Парсер пропустил строк за 24 ч",
+      "gridPos": { "x": 12, "y": 24, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Skip technical row\" [24h]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 50 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 20,
+      "type": "text",
+      "title": "",
+      "gridPos": { "x": 0, "y": 28, "w": 24, "h": 2 },
+      "options": { "mode": "markdown", "content": "## 🤖 LLM классификатор" }
+    },
+
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "LLM ошибки по времени",
+      "gridPos": { "x": 0, "y": 30, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"LLM response validation failed\" [5m]))",
+          "legendFormat": "validation failed"
+        },
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"LLM attempt\" |= \"failed\" [5m]))",
+          "legendFormat": "retry failed"
+        },
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Classification failed\" [5m]))",
+          "legendFormat": "classification failed"
+        }
+      ]
+    },
+
+    {
+      "id": 22,
+      "type": "piechart",
+      "title": "Распределение LLM ошибок (за 24 ч)",
+      "gridPos": { "x": 12, "y": 30, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"LLM response validation failed\" [24h]))",
+          "legendFormat": "validation failed"
+        },
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"LLM attempt\" |= \"failed\" [24h]))",
+          "legendFormat": "retry exhausted"
+        },
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Unknown category from model\" [24h]))",
+          "legendFormat": "unknown category"
+        },
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Classifier unavailable\" [24h]))",
+          "legendFormat": "no api key"
+        }
+      ]
+    },
+
+    {
+      "id": 23,
+      "type": "stat",
+      "title": "Неизвестных категорий за 24 ч",
+      "gridPos": { "x": 0, "y": 38, "w": 8, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Unknown category from model\" [24h]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 20 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 24,
+      "type": "stat",
+      "title": "Классификатор недоступен (за 24 ч)",
+      "gridPos": { "x": 8, "y": 38, "w": 8, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Classifier unavailable\" [24h]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 25,
+      "type": "stat",
+      "title": "Классификация упала (за 24 ч)",
+      "gridPos": { "x": 16, "y": 38, "w": 8, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Classification failed, leaving transactions as needs_review\" [24h]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 30,
+      "type": "text",
+      "title": "",
+      "gridPos": { "x": 0, "y": 42, "w": 24, "h": 2 },
+      "options": { "mode": "markdown", "content": "## 🔒 Безопасность" }
+    },
+
+    {
+      "id": 31,
+      "type": "timeseries",
+      "title": "Отклонённые запросы (Доступ запрещён)",
+      "gridPos": { "x": 0, "y": 44, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({project=\"lebowski\"} |= \"Доступ запрещён\" [5m]))",
+          "legendFormat": "unauthorized"
+        }
+      ]
+    },
+
+    {
+      "id": 32,
+      "type": "logs",
+      "title": "Попытки несанкционированного доступа",
+      "gridPos": { "x": 12, "y": 44, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "{project=\"lebowski\"} |= \"Доступ запрещён\""
+        }
+      ],
+      "options": { "showTime": true, "sortOrder": "Descending" }
+    },
+
+    {
+      "id": 40,
+      "type": "text",
+      "title": "",
+      "gridPos": { "x": 0, "y": 52, "w": 24, "h": 2 },
+      "options": { "mode": "markdown", "content": "## 📋 Все логи (live)" }
+    },
+
+    {
+      "id": 41,
+      "type": "logs",
+      "title": "Все логи",
+      "gridPos": { "x": 0, "y": 54, "w": 24, "h": 10 },
+      "targets": [
+        {
+          "expr": "{project=\"lebowski\"}"
+        }
+      ],
+      "options": { "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true }
+    }
+  ]
+}

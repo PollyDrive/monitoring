@@ -1,0 +1,5 @@
+apiVersion: 1
+
+datasources: []
+# Datasource Loki уже объявлен в projects/daemon/grafana/provisioning/datasources/loki.yml
+# Один инстанс Loki используется всеми проектами — разделение идёт по labels ({app="lebowski"})
