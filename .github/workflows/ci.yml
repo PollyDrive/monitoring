@@ -20,17 +20,18 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Copy docker-compose.yml to server
+      - name: Copy files to server
         run: |
-          ssh root@${{ secrets.SERVER_IP }} "mkdir -p /opt/alina/monitoring"
-          scp docker-compose.yml root@${{ secrets.SERVER_IP }}:/opt/alina/monitoring/
+          ssh root@${{ secrets.SERVER_IP }} "rm -rf /opt/alina/monitoring && mkdir -p /opt/alina/monitoring"
+          scp docker-compose.yml loki-config.yml root@${{ secrets.SERVER_IP }}:/opt/alina/monitoring/
+          scp -r projects root@${{ secrets.SERVER_IP }}:/opt/alina/monitoring/
 
       - name: Deploy on server
         run: |
           ssh root@${{ secrets.SERVER_IP }} "
             cd /opt/alina/monitoring &&
-            echo 'GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}' > .env
-            docker compose pull
-            docker compose up -d --force-recreate
+            echo 'GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}' > .env &&
+            docker compose down &&
+            docker compose up -d &&
             docker image prune -f
           "
