@@ -17,7 +17,6 @@ common:
     kvstore:
       store: inmemory
 
-# Хранить логи 30 дней
 limits_config:
   retention_period: 168h          # 7 дней
   ingestion_rate_mb: 8
