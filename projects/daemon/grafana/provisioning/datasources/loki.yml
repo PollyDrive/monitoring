@@ -8,9 +8,4 @@ datasources:
     url: http://loki:3100
     isDefault: true
     jsonData:
-      maxLines: 5000
-      derivedFields:
-        # Связываем уровень лога с меткой
-        - name: level
-          matcherRegex: "(ERROR|WARNING|INFO|DEBUG)"
-          url: ""
+      maxLines: 500
