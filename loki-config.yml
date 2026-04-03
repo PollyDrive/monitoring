@@ -18,18 +18,18 @@ common:
       store: inmemory
 
 limits_config:
-  retention_period: 168h          # 7 дней
-  ingestion_rate_mb: 8
-  ingestion_burst_size_mb: 16
+  retention_period: 168h
+  ingestion_rate_mb: 4
+  ingestion_burst_size_mb: 8
   max_query_length: 169h
-  max_entries_limit_per_query: 50000
+  max_entries_limit_per_query: 5000
 
 query_range:
   results_cache:
     cache:
       embedded_cache:
         enabled: true
-        max_size_mb: 100
+        max_size_mb: 20
 
 schema_config:
   configs:
@@ -41,10 +41,6 @@ schema_config:
         prefix: index_
         period: 24h
 
-ruler:
-  alertmanager_url: http://localhost:9093
-
-# Автоматическая очистка по retention
 compactor:
   working_directory: /loki/compactor
   retention_enabled: true
